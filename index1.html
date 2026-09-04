@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberX Downloader</title>
+    <!-- الأوامر القياسية لتحويل الموقع لأيقونة مستقلة بكامل الشاشة على الهاتف -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body {
+            background-color: #0d0e15; /* اللون الأسود الكوني للسايبربانك */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #1e1f29;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid #374151;
+            text-align: center;
+        }
+        h1 { color: #00f0ff; font-size: 24px; margin-bottom: 5px; font-weight: bold; }
+        p.subtitle { color: #6b7280; font-size: 13px; margin-bottom: 25px; }
+        input {
+            width: 100%;
+            padding: 14px;
+            background-color: #0d0e15;
+            border: 2px solid #374151;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        input:focus { border-color: #00f0ff; }
+        .info-tag { color: #a1a1aa; font-size: 12px; font-weight: bold; margin-bottom: 20px; display: block; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #ff0055; /* نيون فوشيا */
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:disabled { background-color: #4b5563; }
+        .status { margin-top: 20px; font-size: 13px; color: #00ff66; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>CYBERX DOWNLOADER</h1>
+        <p class="subtitle">Fast & Stable Media Extractor</p>
+        
+        <input type="text" id="videoUrl" placeholder="Paste YouTube Link or Shorts here...">
+        <span class="info-tag">⚡ Smart Mode: 1080p + Auto Arabic Dubbing ⚡</span>
+        
+        <button id="downloadBtn" onclick="processDownload()">DOWNLOAD VIDEO NOW</button>
+        <div id="statusLabel" class="status">System Idle || Ready for URL</div>
+    </div>
+
+    <script>
+        function processDownload() {
+            var urlInput = document.getElementById('videoUrl').value.trim();
+            var btn = document.getElementById('downloadBtn');
+            var status = document.getElementById('statusLabel');
+            
+            if (!urlInput) {
+                alert('Please paste a YouTube URL first!');
+                return;
+            }
+            
+            btn.disabled = true;
+            status.innerText = "Processing stream metadata... Please wait...";
+            status.style.color = "#ffaa00";
+            
+            // تهيئة إرسال البيانات المباشرة للـ API المحدث
+            var requestData = { url: urlInput, videoQuality: "1080" };
+            
+            // التحقق الذكي الكلاسيكي للتفريق بين الفيديو الطويل والـ Shorts
+            if (!urlInput.includes("shorts")) {
+                requestData.youtubeAudioLanguage = "ar";
+            }
+            
+            fetch('https://cobalt.tools', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(function(response) { 
+                if (!response.ok) { throw new Error(); }
+                return response.json(); 
+            })
+            .then(function(data) {
+                var finalUrl = data.url || data.text;
+                if (finalUrl) {
+                    status.innerText = "✔ Stream package linked! Initializing download...";
+                    status.style.color = "#00ff66";
+                    // توجيه المتصفح لتحميل الفيديو فورا داخل الموبايل
+                    window.location.href = finalUrl; 
+                } else {
+                    throw new Error();
+                }
+            })
+            .catch(function() {
+                status.innerText = "❌ Download Failed! Check URL or server load.";
+                status.style.color = "#ff0055";
+            })
+            .finally(function() {
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
+
