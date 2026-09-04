@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberX Downloader</title>
-    <!-- الأوامر القياسية لتحويل الموقع لأيقونة مستقلة بكامل الشاشة على الهاتف -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body {
-            background-color: #0d0e15; /* اللون الأسود الكوني للسايبربانك */
+            background-color: #0d0e15;
             color: #ffffff;
             display: flex;
             justify-content: center;
@@ -48,7 +46,7 @@
         button {
             width: 100%;
             padding: 15px;
-            background-color: #ff0055; /* نيون فوشيا */
+            background-color: #ff0055;
             color: #ffffff;
             border: none;
             border-radius: 10px;
@@ -88,10 +86,17 @@
             status.innerText = "Processing stream metadata... Please wait...";
             status.style.color = "#ffaa00";
             
-            // تهيئة إرسال البيانات المباشرة للـ API المحدث
+            // تنظيف الرابط تلقائياً من أي أكواد مشاركة زيادة لتجنب رفض السيرفر
+            if (urlInput.includes("?")) {
+                urlInput = urlInput.split("?")[0];
+            }
+            if (urlInput.includes("&")) {
+                urlInput = urlInput.split("&")[0];
+            }
+            
             var requestData = { url: urlInput, videoQuality: "1080" };
             
-            // التحقق الذكي الكلاسيكي للتفريق بين الفيديو الطويل والـ Shorts
+            // فحص مرن لتحديد الشورتس أو الفيديوهات الطويلة المدبلجة
             if (!urlInput.includes("shorts")) {
                 requestData.youtubeAudioLanguage = "ar";
             }
@@ -113,7 +118,6 @@
                 if (finalUrl) {
                     status.innerText = "✔ Stream package linked! Initializing download...";
                     status.style.color = "#00ff66";
-                    // توجيه المتصفح لتحميل الفيديو فورا داخل الموبايل
                     window.location.href = finalUrl; 
                 } else {
                     throw new Error();
@@ -130,4 +134,3 @@
     </script>
 </body>
 </html>
-
